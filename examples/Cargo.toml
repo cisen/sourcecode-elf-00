@@ -1,5 +1,5 @@
 [package]
-name = "elf"
+name = "elf-sample"
 version = "0.0.10"
 authors = ["Christopher Cole <chris.cole.09@gmail.com>"]
 license = "MIT/Apache-2.0"
@@ -10,11 +10,12 @@ description = "A pure-rust library for parsing ELF files"
 keywords = ["elf"]
 readme = "README.md"
 
-[lib]
-name = "elf"
+[[bin]]
+name = "elfsample"
+path = "sample.rs"
 
 [dependencies]
-byteorder = "0.*"
+elf = { path = "../" }
 
 [[example]]
 name = "sample"
