@@ -60,14 +60,18 @@ impl std::convert::From<std::string::FromUtf8Error> for ParseError {
 impl File {
     pub fn open_path<T: AsRef<Path>>(path: T) -> Result<File, ParseError> {
         // Open the file for reading
+        // 使用原生函数根据路径打开一个只读的文件，并且返回fs::File结构
+        // 实际就是创建fs::File对象
         let mut io_file = try!(fs::File::open(path));
 
         File::open_stream(&mut io_file)
     }
-
+    // 读取elf文件到本地File结构的文件并返回
     pub fn open_stream<T: io::Read + io::Seek>(io_file: &mut T) -> Result<File, ParseError> {
         // Read the platform-independent ident bytes
+        // 创建空elf头部
         let mut ident = [0u8; types::EI_NIDENT];
+        // 调用io::Read方法读取elf文件头部到一个buffer里面，返回文件大小
         let nread = try!(io_file.read(ident.as_mut()));
 
         if nread != types::EI_NIDENT {
@@ -81,11 +85,13 @@ impl File {
         }
 
         // Fill in file header values from ident bytes
+        // 利用直接的File对象创建一个新的File对象，并填充elf文件到指定的File对象
         let mut elf_f = File::new();
         elf_f.ehdr.class = types::Class(ident[types::EI_CLASS]);
         elf_f.ehdr.data = types::Data(ident[types::EI_DATA]);
         elf_f.ehdr.osabi = types::OSABI(ident[types::EI_OSABI]);
         elf_f.ehdr.abiversion = ident[types::EI_ABIVERSION];
+        // 利用src\utils.rs的read_u16宏读取文件到新elf文件
         elf_f.ehdr.elftype = types::Type(try!(read_u16!(elf_f, io_file)));
         elf_f.ehdr.machine = types::Machine(try!(read_u16!(elf_f, io_file)));
         elf_f.ehdr.version = types::Version(try!(read_u32!(elf_f, io_file)));

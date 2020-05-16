@@ -1,6 +1,7 @@
 use std::fmt;
 
 /// Length of ELF file header platform-independent identification fields
+// elf文件头部的大小
 pub const EI_NIDENT: usize = 16;
 /// ELF magic number byte 1
 pub const ELFMAG0: u8 = 0x7f;
